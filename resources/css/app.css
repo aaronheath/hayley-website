@@ -6,6 +6,14 @@
     @apply font-bold sm:text-xl uppercase tracking-widest border-purple-500 border-l-8 pl-2;
 }
 
+.position-description > p:first-child {
+    @apply mt-0;
+}
+
+.prose {
+    max-width: 78ch;
+}
+
 progress {
     margin-top: 0.5rem;
     width: 100%;

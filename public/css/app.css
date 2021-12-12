@@ -33216,6 +33216,14 @@ video {
   }
 }
 
+.position-description > p:first-child {
+  margin-top: 0px;
+}
+
+.prose {
+  max-width: 78ch;
+}
+
 progress {
   margin-top: 0.5rem;
   width: 100%;
