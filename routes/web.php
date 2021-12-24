@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +17,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/leo', function() {
+    $files = Storage::disk('public-assets')->files('img/leo');
+
+    return view('image-only', ['path' => Arr::random($files)]);
 });

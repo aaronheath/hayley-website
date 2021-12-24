@@ -15,9 +15,9 @@ if($uc) {
 $branch = exec('git rev-parse --abbrev-ref HEAD');
 }
 
-$servers = ['tanahashi.aaronheath.io'];
+$servers = ['switchblade.aaronheath.io'];
 $user = $user ?: 'aaronheath';
-$project = $project ?: 'awmr';
+$project = $project ?: 'hayley-website';
 $branch = $branch ?: 'master';
 $repository = "aaronheath/{$project}";
 $baseDir = $path ?: "/var/www/{$host}";
@@ -57,7 +57,7 @@ cd {{ $releasesDir }}
 mkdir {{ $newReleaseDir }}
 
 # Clone the repo
-git clone --depth 1 --single-branch -b {{ $branch }} github-awmr:{{ $repository }} {{ $newReleaseName }}
+git clone --depth 1 --single-branch -b {{ $branch }} git@github.com:{{ $repository }}.git {{ $newReleaseName }}
 
 # Configure sparse checkout
 cd {{ $newReleaseDir }}
@@ -96,7 +96,7 @@ ln -nfs {{ $baseDir }}/storage storage
 {{ logMessage('start linking .env config') }}
 cd {{ $newReleaseDir }}
 ln -nfs {{ $baseDir }}/.env .env
-ln -nfs {{ $baseDir }}/.npmrc .npmrc
+#ln -nfs {{ $baseDir }}/.npmrc .npmrc
 @endtask
 
 @task('perform migrations')
@@ -124,7 +124,7 @@ rm -rf node_modules
 @task('update permissions')
 {{ logMessage('start updatePermissions') }}
 
-chgrp -R www-data {{ $newReleaseDir }}
+chgrp -R web {{ $newReleaseDir }}
 find {{ $newReleaseDir }} -type d -exec chmod 775 {} \;
 find {{ $newReleaseDir }} -type d -exec chmod g+s {} \;
 find {{ $newReleaseDir }} -type f -exec chmod 664 {} \;

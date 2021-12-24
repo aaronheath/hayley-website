@@ -28,14 +28,14 @@
                 <h2 class="text-center text-xl font-light">Client Services Representative</h2>
             </div>
 
-            <div class="font-light text-lg px-2 mb-12">
-                <div class="flex items-center my-3">
-                    <a href="/downloads/resume.pdf">
-                        <i class="inline w-6 mr-4 fal fa-cloud-download"></i>
-                        <span class="">Download CV</span>
-                    </a>
-                </div>
-            </div>
+{{--            <div class="font-light text-lg px-2 mb-12">--}}
+{{--                <div class="flex items-center my-3">--}}
+{{--                    <a href="/downloads/resume.pdf">--}}
+{{--                        <i class="inline w-6 mr-4 fal fa-cloud-download"></i>--}}
+{{--                        <span class="">Download CV</span>--}}
+{{--                    </a>--}}
+{{--                </div>--}}
+{{--            </div>--}}
 
             <div class="font-light text-lg px-2 mb-12">
                 <h2 class="text-xl font-semibold mb-4">Contact</h2>
@@ -82,10 +82,10 @@
             <div id="profile" class="prose">
                 <h2 class="section-headline text-purple-600">Profile</h2>
                 <p>
-                    I have spent the last 18 years developing a variety of skills that have served me well in diverse
-                    working environments and sectors in Australia as well as in Canada. I am seeking a new opportunity
-                    to utilise these skills. I also have a keen interest in Human Resource Management and I am currently
-                    enrolled at TAFE SA studying this subject.
+                    Currently a Client Services Representative at DPS Publishing. I'm also studying Human Resources
+                    Management at TAFE SA. Over the last 18 years I've developed a diverse range of skills (including
+                    Customer Service, Administration, Accounting and Human Resourcing) which have served me well in
+                    wide-ranging environments on two continents.
                 </p>
             </div>
             <hr class="mt-8 mb-12" />
