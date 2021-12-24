@@ -57,7 +57,7 @@ cd {{ $releasesDir }}
 mkdir {{ $newReleaseDir }}
 
 # Clone the repo
-git clone --depth 1 --single-branch -b {{ $branch }} github-hayley-website:{{ $repository }} {{ $newReleaseName }}
+git clone --depth 1 --single-branch -b {{ $branch }} git@github.com:{{ $repository }}.git {{ $newReleaseName }}
 
 # Configure sparse checkout
 cd {{ $newReleaseDir }}
@@ -124,7 +124,7 @@ rm -rf node_modules
 @task('update permissions')
 {{ logMessage('start updatePermissions') }}
 
-chgrp -R www-data {{ $newReleaseDir }}
+chgrp -R web {{ $newReleaseDir }}
 find {{ $newReleaseDir }} -type d -exec chmod 775 {} \;
 find {{ $newReleaseDir }} -type d -exec chmod g+s {} \;
 find {{ $newReleaseDir }} -type f -exec chmod 664 {} \;
