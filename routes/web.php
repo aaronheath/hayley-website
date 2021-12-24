@@ -19,8 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::redirect('/leo', '/there');
-
 Route::get('/leo', function() {
     $files = Storage::disk('public-assets')->files('img/leo');
 
