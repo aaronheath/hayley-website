@@ -1,0 +1,19 @@
+name: 'Deploy to Laravel Forge'
+
+#on:
+#  push:
+#    branches:
+#      - master
+on: workflow_dispatch
+
+jobs:
+  forge-deploy:
+    name: 'Laravel Forge Deploy'
+    runs-on: ubuntu-latest
+
+    steps:
+      # Trigger Laravel Forge Deploy
+      - name: Deploy conductor-01
+        uses: jbrooksuk/laravel-forge-action@v1.0.2
+        with:
+          trigger_url: ${{ secrets.FORGE_TRIGGER_URL }}
