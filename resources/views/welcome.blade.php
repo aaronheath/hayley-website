@@ -7,17 +7,15 @@
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <title>Hayley O'Kelly | CV</title>
+
+    <script src="https://kit.fontawesome.com/27422e76a0.js" crossorigin="anonymous"></script>
 </head>
 <body class="font-sans antialiased w-full">
 <div class="container mx-auto max-w-screen-xl">
-    <main
-        id="wrapper"
-        class="flex flex-col sm:flex-row-reverse sm:m-12 shadow-2xl"
-    >
-        <div
-            id="sidebar"
-            class="w-full sm:max-w-sm p-8 bg-gradient-to-b from-purple-300 sm:from-purple-600 to-white text-black sm:text-white"
-        >
+    <main id="wrapper"
+        class="flex flex-col sm:flex-row-reverse sm:m-12 shadow-2xl">
+        <div id="sidebar"
+            class="w-full sm:max-w-sm p-8 bg-gradient-to-b from-purple-300 sm:from-purple-600 to-white text-black sm:text-white">
             <div class="px-2 mb-12">
 {{--                <img--}}
 {{--                    src="./assets/jack-finnigan-rriAI0nhcbc-unsplash.jpg"--}}
@@ -25,26 +23,17 @@
 {{--                    class="rounded-full w-48 mx-auto mb-2"--}}
 {{--                />--}}
                 <h1 class="text-center text-3xl font-semibold mb-2">Hayley O'Kelly</h1>
-                <h2 class="text-center text-xl font-light">Client Services Representative</h2>
+                <h2 class="text-center text-xl font-light">Office Administrator</h2>
             </div>
-
-{{--            <div class="font-light text-lg px-2 mb-12">--}}
-{{--                <div class="flex items-center my-3">--}}
-{{--                    <a href="/downloads/resume.pdf">--}}
-{{--                        <i class="inline w-6 mr-4 fal fa-cloud-download"></i>--}}
-{{--                        <span class="">Download CV</span>--}}
-{{--                    </a>--}}
-{{--                </div>--}}
-{{--            </div>--}}
 
             <div class="font-light text-lg px-2 mb-12">
                 <h2 class="text-xl font-semibold mb-4">Contact</h2>
+                <a href="mailto:hayley@hayleyokelly.com" class="flex items-center my-3">
+                    <i class="inline w-6 mr-2 fa-light fa-envelope"></i>
+                    <span>hayley@hayleyokelly.com</span>
+                </a>
                 <div class="flex items-center my-3">
-                    <i class="inline w-6 mr-4 fal fa-envelope"></i>
-                    <a href="mailto:hayley@hayleyokelly.com">hayley@hayleyokelly.com</a>
-                </div>
-                <div class="flex items-center my-3">
-                    <i class="inline w-6 mr-4 fal fa-location-arrow"></i>
+                    <i class="inline w-6 mr-2 fa-light fa-location-arrow"></i>
                     <div>
                         <p>Adelaide, Australia</p>
                     </div>
@@ -54,38 +43,33 @@
             <div class="font-light text-lg px-2 mb-12">
                 <h2 class="text-xl font-semibold mb-4">Personal</h2>
                 <div class="flex items-center my-3">
-                    <i class="inline w-6 mr-4 fal fa-calendar-alt"></i>
+                    <i class="inline-block w-6 mr-2 fa-light fa-calendar-alt"></i>
                     <span>Born on 25th of April 1986</span>
                 </div>
+                <a href="{{ asset('storage/cv/hayley-okelly-resume-20230802-001.pdf') }}"
+                   class="flex items-center my-3"
+                   target="_blank">
+                    <i class="inline-block w-6 mr-2 fa-light fa-cloud-download"></i>
+                    <span>Download CV</span>
+                </a>
             </div>
 
-
-{{--            <div class="font-light text-lg px-2 mb-12">--}}
-{{--                <h2 class="text-xl font-semibold mb-4">On the Web</h2>--}}
-{{--                <div class="flex items-center my-3">--}}
-{{--                    <img--}}
-{{--                        src="./assets/logo-linkedin.svg"--}}
-{{--                        class="inline w-6 mr-4"--}}
-{{--                        alt="LinkedIn Logo"--}}
-{{--                    />--}}
-{{--                    <a href="#" target="_blank" rel="noopener noreferrer">LinkedIn</a>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-
-{{--            <div class="font-light text-lg px-2 mb-12">--}}
-{{--                <h2 class="text-xl font-semibold mb-4">Education</h2>--}}
-{{--                <h3 class="font-semibold">BSc Computer Science</h3>--}}
-{{--                <p>20016 - 2019 University of London</p>--}}
-{{--            </div>--}}
+            <div class="font-light text-3xl px-2 mb-12">
+                <h2 class="text-xl font-semibold mb-4">Networking</h2>
+                <div class="flex items-center my-3">
+                    <a href="https://www.linkedin.com/in/hayley-okelly"
+                       target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
         </div>
         <div class="content w-full p-12">
             <div id="profile" class="prose">
                 <h2 class="section-headline text-purple-600">Profile</h2>
                 <p>
-                    Currently a Client Services Representative at DPS Publishing. I'm also studying Human Resources
-                    Management at TAFE SA. Over the last 18 years I've developed a diverse range of skills (including
-                    Customer Service, Administration, Accounting and Human Resourcing) which have served me well in
-                    wide-ranging environments on two continents.
+                    I have spent the last 18+ years developing a variety of skills that have served me well in diverse
+                    working environments and sectors in Australia as well as in Canada. I am seeking a new opportunity
+                    to utilise these skills. I also have a keen interest in Human Resource Management and I am currently
+                    enrolled at UpSkilled  studying this subject.
                 </p>
             </div>
             <hr class="mt-8 mb-12" />
@@ -106,20 +90,58 @@
                         Customer Service
                     </h4>
                     <ul>
-                        <li>Ability to answer the telephone in a professional manner</li>
-                        <li>Able to communicate with people of all ages in a friendly manner</li>
-                        <li>Excellent listening abilities</li>
-                        <li>Excellent verbal skills</li>
+                        <li>Over 18 years experience with direct customer contact</li>
+                        <li>Able to deal with difficult customers</li>
+                        <li>Maintenance of retail space upkeep and presentation</li>
+                        <li>Accurate cash handling skills</li>
+                        <li>Able to efficiently and productively interact with team members</li>
                     </ul>
                 </div>
             </div>
             <hr class="mt-8 mb-12" />
             <div id="experience" class="prose">
                 <h2 class="section-headline">Experience</h2>
+                <x-position tasks="Administration,Scheduling,Grant Applications,Debt Collection,Client Relations,Stock Control,Documentation">
+                    <x-slot name="company">IT 4 Retirees</x-slot>
+
+                    <x-slot name="when">Jun 2022 - Present</x-slot>
+
+                    <x-slot name="role">
+                        Office Administrator<br>
+                        Adelaide, Australia
+                    </x-slot>
+
+                    <x-slot name="description">
+                        <p>IT 4 Retirees is a South Australian family-owned business that offers group classes, 1 on 1
+                            classes as well as remote classes to over 55’s to assist with all IT issues they encounter.</p>
+
+                        <p>IT 4 Retirees has allowed me to build on the skills gained previously as well as helping me to expand and build on these skills.</p>
+
+                        <p>My Duties include:</p>
+
+                        <ul>
+                            <li>Scheduling appointments and managing the calendars for 26 trainers in multiple
+                                states.</li>
+                            <li>Schedule group classes using government grants for community organisations.</li>
+                            <li>Invoicing private clients as well as home care providers.</li>
+                            <li>Debt collection of all outstanding invoices.</li>
+                            <li>Reconciling trainer’s invoices with calendar appointments and invoiced services for
+                                payroll.</li>
+                            <li>Contacting clients; new, previous and clients who have expressed interest in
+                                services.</li>
+                            <li>Updating and maintaining CRM database with up-to-date information on all clients.</li>
+                            <li>Update and manage the asset and stock database.</li>
+                            <li>Update Admin manual as processes update.</li>
+                            <li>Handle day to day enquiries via phone and email from general public, clients, and
+                                providers.</li>
+                        </ul>
+                    </x-slot>
+                </x-position>
+
                 <x-position tasks="Customer Service,Shipping,EDMs,Support Guides,Training">
                     <x-slot name="company">DPS Publishing</x-slot>
 
-                    <x-slot name="when">Nov 2019 - Present</x-slot>
+                    <x-slot name="when">Nov 2019 - Jun 2022</x-slot>
 
                     <x-slot name="role">
                         Client Services Representative<br>
@@ -135,7 +157,7 @@
                         <p>DPS Publishing has seen me utilise the skills and experience gained during previous roles
                             to provide great experiences for advertisers and consumers.</p>
 
-                        <p>My duties include:</p>
+                        <p>My duties included:</p>
 
                         <ul>
                             <li>Cold calling non-advertising companies to update and verify their listings
@@ -347,9 +369,6 @@
         </div>
     </main>
 </div>
-
-<script defer src="https://pro.fontawesome.com/releases/v5.15.4/js/light.js" integrity="sha384-6EhWHErkaXt19GTK7f+5rRc16ekdzvItcFycGZi1GS/AycADXj7L2tkZ9z2O71ot" crossorigin="anonymous"></script>
-<script defer src="https://pro.fontawesome.com/releases/v5.15.4/js/fontawesome.js" integrity="sha384-RTs6cAeLGZoCPlBxXNxYfQnVIrvTagXGxIhrXFjWgp4i4E5urdGFLlkfbsk1Nd+L" crossorigin="anonymous"></script>
 
 </body>
 </html>
