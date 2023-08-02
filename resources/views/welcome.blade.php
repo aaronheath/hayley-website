@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <title>Hayley O'Kelly | CV</title>
 
     <script src="https://kit.fontawesome.com/27422e76a0.js" crossorigin="anonymous"></script>
