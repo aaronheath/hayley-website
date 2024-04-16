@@ -13,7 +13,7 @@ jobs:
 
     steps:
       # Trigger Laravel Forge Deploy
-      - name: Deploy conductor-01
+      - name: Deploy to production
         uses: jbrooksuk/laravel-forge-action@v1.0.2
         with:
           trigger_url: ${{ secrets.FORGE_TRIGGER_URL }}
