@@ -1,4 +1,4 @@
-name: 'Deploy to Laravel Forge'
+name: 'Deploy to Ploi'
 
 #on:
 #  push:
@@ -7,13 +7,12 @@ name: 'Deploy to Laravel Forge'
 on: workflow_dispatch
 
 jobs:
-  forge-deploy:
-    name: 'Laravel Forge Deploy'
+  ploi-deploy:
+    name: 'Ploi Deploy'
     runs-on: ubuntu-latest
 
     steps:
-      # Trigger Laravel Forge Deploy
       - name: Deploy conductor-01
         uses: jbrooksuk/laravel-forge-action@v1.0.2
         with:
-          trigger_url: ${{ secrets.FORGE_TRIGGER_URL }}
+          trigger_url: ${{ secrets.PLOI_DEPLOY_TRIGGER_URL }}
