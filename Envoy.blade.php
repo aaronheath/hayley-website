@@ -1,161 +1,118 @@
 @setup
+    /** Ubuntu 24.04 LTS with versioned PHP packages from ppa:ondrej/php. See docs/deploys.md. */
+    $server = $server ?? '85.155.189.223';
+    $domain = 'hayleyokelly.com';
+    $phpVersion = '8.4';
+    $baseDir = '/var/www/hayley-website';
 
-$hostMap = [
-'production' => 'hayleyokelly.com',
-'staging' => 'hayley.hardycode.com.au',
-];
+    $config = [
+        'app' => 'hayley-website',
+        'user' => 'deploy',
+        'runtimeUser' => 'app-hayley-website',
+        'webUser' => 'www-data',
+        'repository' => 'git@github.com:aaronheath/hayley-website.git',
+        'domain' => $domain,
+        'redirectHosts' => ['www.hayleyokelly.com'],
+        'baseDir' => $baseDir,
+        'phpVersion' => $phpVersion,
+        'phpBinary' => "/usr/bin/php{$phpVersion}",
+        'composerBinary' => '/usr/local/bin/composer',
+        'nodeBinary' => '',
+        'nvmDir' => '/opt/nvm',
+        'buildLock' => '/var/lib/laravel-deploy/build.lock',
+        'repositoryKey' => '/var/lib/laravel-deploy/keys/hayley-website',
+        'knownHosts' => '/etc/laravel-host/github_known_hosts',
+        'fpmChildren' => 4,
+        'phpMemoryMb' => 256,
+        'valkeyMemoryMb' => 256,
+        'memcachedMemoryMb' => 64,
+        'fpmSocket' => "/run/php/php{$phpVersion}-hayley-website.sock",
+        'systemRoot' => '/etc',
+        'certificate' => "/etc/ssl/cloudflare/{$domain}.pem",
+        'privateKey' => "/etc/ssl/cloudflare/{$domain}.key",
+        'originCa' => '/etc/ssl/cloudflare/origin-ca.pem',
+        'keepReleases' => 5,
+    ];
 
-if(is_null($dest)) {
-$host = $hostMap['staging'];
-} else {
-$host = $hostMap[$dest];
-}
+    $localMode = (string) ($local ?? '0') === '1';
+    $branch = $branch ?? 'master';
+    $release = $release ?? '';
+    $taskOptions = [
+        'on' => 'target',
+    ];
+    $templates = [];
 
-if($uc) {
-$branch = exec('git rev-parse --abbrev-ref HEAD');
-}
+    foreach (['nginx.conf', 'cron', 'setup.sh'] as $name) {
+        $templates[$name] = file_get_contents($__dir.'/.meta/deployment/'.$name);
+    }
 
-$servers = ['switchblade.aaronheath.io'];
-$user = $user ?: 'aaronheath';
-$project = $project ?: 'hayley-website';
-$branch = $branch ?: 'master';
-$repository = "aaronheath/{$project}";
-$baseDir = $path ?: "/var/www/{$host}";
-$releasesDir = "{$baseDir}/releases";
-$currentDir = "{$baseDir}/current";
-$newReleaseName = date('Y_m_d_H_i_s');
-$newReleaseDir = "{$releasesDir}/{$newReleaseName}";
+    $templates['environment.example'] = file_get_contents($__dir.'/.env.example');
 
-function logMessage($message) {
-return "echo '\033[32m" .$message. "\033[0m';\n";
-}
+    $bundle = base64_encode(json_encode([
+        'config' => $config,
+        'templates' => $templates,
+        'script' => file_get_contents($__dir.'/.meta/scripts/Deployment.php'),
+    ], JSON_THROW_ON_ERROR));
+
+    $bootstrap = <<<'PHP'
+    $bundle = json_decode(base64_decode($argv[1], true), true, flags: JSON_THROW_ON_ERROR);
+
+    $script = tmpfile();
+
+    fwrite($script, $bundle['script']);
+
+    require stream_get_meta_data($script)['uri'];
+
+    try {
+        umask(0027);
+
+        (new \HayleyWebsite\Deployment\Deployment($bundle['config'], $bundle['templates']))
+            ->run($argv[2], $argv[3], $argv[4] === '' ? null : $argv[4]);
+    } catch (\Throwable $exception) {
+        fwrite(STDERR, $exception->getMessage().PHP_EOL);
+
+        exit(1);
+    }
+    PHP;
+
+    $command = static function (string $action) use ($config, $bootstrap, $bundle, $branch, $release): string {
+        return 'exec '.implode(' ', array_map('escapeshellarg', [
+            $config['phpBinary'],
+            '-r',
+            $bootstrap,
+            $bundle,
+            $action,
+            $branch,
+            $release,
+        ]));
+    };
 @endsetup
 
-@servers($servers)
+@servers([
+    'target' => $localMode ? '127.0.0.1' : "{$config['user']}@{$server}",
+])
 
-@macro('deploy')
-clone repository
-run composer
-update config
-perform migrations
-optimise installation
-update symlinks
-build js
-update permissions
-link new release
-mark release
-bless new release
-clean old releases
-@endmacro
-
-@task('clone repository')
-{{ logMessage('start clone repository') }}
-[ -d {{ $releasesDir }} ] || mkdir {{ $releasesDir }}
-cd {{ $releasesDir }}
-
-# Create the release dir
-mkdir {{ $newReleaseDir }}
-
-# Clone the repo
-git clone --depth 1 --single-branch -b {{ $branch }} git@github.com:{{ $repository }}.git {{ $newReleaseName }}
-
-# Configure sparse checkout
-cd {{ $newReleaseDir }}
-git config core.sparsecheckout true
-echo "*" > .git/info/sparse-checkout
-echo "!storage" >> .git/info/sparse-checkout
-echo "!public/css" >> .git/info/sparse-checkout
-echo "!public/js" >> .git/info/sparse-checkout
-git read-tree -mu HEAD
+@task('setup', $taskOptions)
+    set -eu
+    {{ $command('setup') }}
 @endtask
 
-@task('mark release')
-# Mark release
-cd {{ $currentDir }}
-git rev-parse HEAD | tr -d '\n' > VERSION
+@task('check', $taskOptions)
+    set -eu
+    {{ $command('check') }}
 @endtask
 
-@task('run composer')
-{{ logMessage('start run composer') }}
-cd {{ $newReleaseDir }}
-composer install --prefer-dist --no-scripts -q -o
+@task('deploy', $taskOptions)
+    set -eu
+    {{ $command('deploy') }}
 @endtask
 
-@task('update symlinks')
-{{ logMessage('start update symlinks') }}
-# Remove the storage directory and replace with persistent data
-rm -rf {{ $newReleaseDir }}/storage
-cd {{ $newReleaseDir }}
-ln -nfs {{ $baseDir }}/storage storage
-#ln -nfs {{ $baseDir }}/telescope.sqlite database
-
-#cp {{ $baseDir }}/webapps/standard.config.js {{ $newReleaseDir }}/resources/assets/js/standard/config.js
+@task('releases', $taskOptions)
+    set -eu
+    {{ $command('releases') }}
 @endtask
 
-@task('update config')
-{{ logMessage('start linking .env config') }}
-cd {{ $newReleaseDir }}
-ln -nfs {{ $baseDir }}/.env .env
-#ln -nfs {{ $baseDir }}/.npmrc .npmrc
-@endtask
-
-@task('perform migrations')
-{{ logMessage('start migrations') }}
-cd {{ $newReleaseDir }}
-#php artisan migrate --force
-@endtask
-
-@task('optimise installation')
-{{ logMessage('start optimise installation') }}
-cd {{ $newReleaseDir }};
-php artisan clear-compiled
-@endtask
-
-@task('build js')
-{{ logMessage('start building js') }}
-cd {{ $newReleaseDir }};
-#mkdir -p public/docs
-npm ci
-npm run production
-#npm run production-docs
-rm -rf node_modules
-@endtask
-
-@task('update permissions')
-{{ logMessage('start updatePermissions') }}
-
-chgrp -R web {{ $newReleaseDir }}
-find {{ $newReleaseDir }} -type d -exec chmod 775 {} \;
-find {{ $newReleaseDir }} -type d -exec chmod g+s {} \;
-find {{ $newReleaseDir }} -type f -exec chmod 664 {} \;
-chmod 777 {{ $newReleaseDir }}/bootstrap/cache
-@endtask
-
-@task('link new release')
-{{ logMessage('start link new release') }}
-ln -nfs {{ $newReleaseDir }} {{ $currentDir }}
-@endtask
-
-@task('bless new release')
-{{ logMessage('start bless new release') }}
-cd {{ $currentDir }}
-rm -rf bootstrap/cache/*
-php artisan storage:link
-php artisan view:clear
-php artisan config:cache
-php artisan route:cache
-php artisan queue:restart
-
-chmod 664 {{ $newReleaseDir }}/bootstrap/cache/*
-
-sudo systemctl reload php8.0-fpm
-#sudo php artisan horizon:terminate
-@endtask
-
-@task('clean old releases')
-{{ logMessage('start clean old releases') }}
-# Delete all but the 3 most recent.
-cd {{ $releasesDir }}
-export RELEASE_PATH={{ $releasesDir }}
-#sudo -E /usr/bin/env bash {{ $newReleaseDir }}/infrastructure/cleanup.sh
+@task('rollback', $taskOptions)
+    set -eu
+    {{ $command('rollback') }}
 @endtask
