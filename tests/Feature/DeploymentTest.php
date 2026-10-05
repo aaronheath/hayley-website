@@ -332,7 +332,16 @@ class DeploymentTest extends TestCase
         Process::run(['openssl', 'req', '-x509', '-newkey', 'rsa:2048', '-nodes',
             '-keyout', $key, '-out', $certificate, '-days', '1', '-subj', '/CN=hayleyokelly.com'])->throw();
         $site = file_get_contents($release.'/.deployment/nginx.conf');
-        $site = str_replace('include fastcgi_params;', 'include /etc/nginx/fastcgi_params;', $site);
+        $this->assertStringContainsString('listen 80;', $site);
+        $this->assertStringContainsString('listen 443 ssl http2;', $site);
+        // Validate the real template as an unprivileged CI user on loopback ports.
+        $site = strtr($site, [
+            'listen 80;' => 'listen 127.0.0.1:18080;',
+            'listen [::]:80;' => 'listen [::1]:18080;',
+            'listen 443 ssl http2;' => 'listen 127.0.0.1:18443 ssl http2;',
+            'listen [::]:443 ssl http2;' => 'listen [::1]:18443 ssl http2;',
+            'include fastcgi_params;' => 'include /etc/nginx/fastcgi_params;',
+        ]);
         file_put_contents($this->host->root.'/site.conf', $site);
         $root = $this->host->root;
         file_put_contents($root.'/nginx.conf', "pid $root/nginx.pid;\nerror_log stderr;\nevents {}\nhttp {\naccess_log off;\nclient_body_temp_path $root/body;\nproxy_temp_path $root/proxy;\nfastcgi_temp_path $root/fastcgi;\nuwsgi_temp_path $root/uwsgi;\nscgi_temp_path $root/scgi;\ninclude $root/site.conf;\n}\n");
