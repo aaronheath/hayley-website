@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Storage;
 |
 */
 
+Route::get('/up', function () {
+    return response('OK', 200);
+})->withoutMiddleware('web');
+
 Route::get('/', function () {
     return view('welcome');
 });

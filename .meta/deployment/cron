@@ -1,0 +1,4 @@
+SHELL=/bin/bash
+HOME={{BASE}}/storage
+PATH={{BASE}}/current/.deployment/bin:{{NODE_BIN}}:/usr/local/bin:/usr/bin:/bin
+* * * * * {{USER}} cd {{BASE}}/current && {{PHP}} artisan schedule:run --no-interaction >> {{BASE}}/storage/logs/scheduler.log 2>&1

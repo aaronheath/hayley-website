@@ -1,0 +1,99 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: mariadb
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: hayley_website_testing
+      DB_USERNAME: root
+      DB_PASSWORD: testing
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ROOT_PASSWORD: testing
+          MARIADB_ROOT_HOST: '%'
+          MARIADB_DATABASE: hayley_website_testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install deployment validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes nginx openssl shellcheck redis-server
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_mysql, mbstring, redis, pcntl, posix
+          tools: composer:v2
+          coverage: none
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+      - run: composer validate --strict --no-check-publish
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - name: Validate deployment shell and Envoy tasks
+        run: |
+          bash -n .meta/deployment/setup.sh
+          shellcheck .meta/deployment/setup.sh
+          for task in setup check deploy releases rollback; do
+            if script="$(vendor/bin/envoy run --pretend --quiet "$task" --local=1 --branch=master)"; then
+              echo 'Expected Envoy pretend mode to exit with code 1' >&2
+              exit 1
+            else
+              test "$?" -eq 1
+            fi
+            printf '%s\n' "$script" | bash -n
+          done
+      - name: Prepare test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - run: npm ci --include=dev
+      - run: npm run production
+      - name: Test fresh MariaDB migrations
+        run: php artisan migrate:fresh --force
+      - name: PHPUnit including real Nginx and isolated Redis socket validation
+        run: vendor/bin/phpunit --do-not-cache-result
+      - name: Verify clean production checkout without development PHP packages
+        run: |
+          release="$(mktemp -d)"
+          git archive HEAD | tar -x -C "$release"
+          cd "$release"
+          cp .env.example .env
+          composer install --no-dev --no-scripts --no-interaction --prefer-dist --optimize-autoloader
+          composer check-platform-reqs --no-dev
+          php artisan key:generate
+          php artisan package:discover
+          npm ci --include=dev
+          npm run production
+          php artisan storage:link
+          php artisan optimize
+          test -s public/mix-manifest.json
+          test -s public/css/app.css
+          test -s public/js/app.js
